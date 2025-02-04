@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <button onclick="logout()">Logout</button>
+
+        <!-- Student Management -->
+        <h2>Manage Students</h2>
+        <input type="text" id="searchStudent" placeholder="Search by Student ID or Name">
+        <button onclick="searchStudent()">Search</button>
+        <button onclick="loadStudents()">Refresh List</button>
+        <button onclick="openStudentModal()">Create New Student</button>
+
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Diploma</th>
+                    <th>Year of Entry</th>
+                    <th>Points</th>
+                    <th>Actions</th> <!-- ✅ Edit and Delete buttons -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Student rows will be inserted here dynamically from admin.js -->
+            </tbody>
+        </table>
+
+        <!-- Redeemable Items Management -->
+        <h2>Manage Redeemable Items</h2>
+        <button onclick="loadItems()">Refresh Items</button>
+
+        <table id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Points Required</th>
+                    <th>Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Create Student Modal -->
+    <div id="createStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeStudentModal()">&times;</span>
+            <h2>Create New Student</h2>
+            <form id="createStudentForm">
+                <label for="studentID">Student ID:</label>
+                <input type="text" id="studentID" required>
+
+                <label for="studentName">Student Name:</label>
+                <input type="text" id="studentName" required>
+
+                <label for="diploma">Diploma:</label>
+                <input type="text" id="diploma" required>
+
+                <label for="yearOfEntry">Year of Entry:</label>
+                <input type="number" id="yearOfEntry" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+
+                <label for="points">Initial Points:</label>
+                <input type="number" id="points" required>
+
+                <button type="submit">Create Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditStudentModal()">&times;</span>
+            <h2>Edit Student</h2>
+            <form id="editStudentForm">
+                <input type="hidden" id="editStudentID">
+
+                <label for="editStudentName">Name:</label>
+                <input type="text" id="editStudentName" required>
+
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" required>
+
+                <label for="editDiploma">Diploma:</label>
+                <input type="text" id="editDiploma" required>
+
+                <label for="editYearOfEntry">Year of Entry:</label>
+                <input type="number" id="editYearOfEntry" required>
+
+                <label for="editPassword">New Password (Leave blank to keep existing):</label>
+                <input type="password" id="editPassword">
+
+                <label for="editPoints">Points:</label>
+                <input type="number" id="editPoints" required>
+
+                <button type="submit">Update Student</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="./Frontend/src/components/admin.js"></script> 
+</body>
+</html>

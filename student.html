@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Library Board - Student</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>The Library Board - Student Portal</h1>
+
+        <h2>Welcome, <span id="studentName">[Student Name]</span>!</h2>
+        <p class="points">Your Points: <span id="studentPoints">0</span></p>
+
+        <h3>Redeemable Items</h3>
+        <div id="itemsContainer"></div>
+
+        <div class="button-group">
+            <button id="redeemedItemsBtn" onclick="window.location.href='redeemed.html'">View Redeemed Items</button>
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <script src="./Frontend/src/components/student.js"></script>
+</body>
+</html>
