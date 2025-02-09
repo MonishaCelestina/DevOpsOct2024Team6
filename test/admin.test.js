@@ -13,7 +13,7 @@ describe("Admin API Tests", () => {
         jest.clearAllMocks(); // Reset mocks before each test
     });
 
-    /** ✅ 1. Test Fetching All Students */
+    /**  1. Test Fetching All Students */
     it("should fetch all students", async () => {
         db.query.mockImplementation((sql, callback) => {
             callback(null, [
@@ -27,7 +27,7 @@ describe("Admin API Tests", () => {
         expect(response.body.length).toBe(2);
     });
 
-    /** ✅ 2. Test Searching Students */
+    /**  2. Test Searching Students */
     it("should search students by name or ID", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, [{ studentID: "123", studentName: "Alice", email: "alice@example.com" }]);
@@ -39,7 +39,7 @@ describe("Admin API Tests", () => {
         expect(response.body[0].studentName).toBe("Alice");
     });
 
-    /** ✅ 3. Test Creating a New Student */
+    /**  3. Test Creating a New Student */
     it("should create a new student", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { insertId: 789 });
@@ -62,7 +62,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Student created successfully");
     });
 
-    /** ✅ 4. Test Updating a Student */
+    /**  4. Test Updating a Student */
     it("should update student details", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { affectedRows: 1 });
@@ -82,7 +82,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Student updated successfully");
     });
 
-    /** ✅ 5. Test Deleting a Student */
+    /**  5. Test Deleting a Student */
     it("should delete a student", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { affectedRows: 1 });
@@ -93,7 +93,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Student deleted successfully");
     });
 
-    /** ✅ 6. Test Fetching All Redeemable Items */
+    /**  6. Test Fetching All Redeemable Items */
     it("should fetch all redeemable items", async () => {
         db.query.mockImplementation((sql, callback) => {
             callback(null, [
@@ -107,7 +107,7 @@ describe("Admin API Tests", () => {
         expect(response.body.length).toBe(2);
     });
 
-    /** ✅ 7. Test Creating a Redeemable Item */
+    /**  7. Test Creating a Redeemable Item */
     it("should create a new redeemable item", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { insertId: 3 });
@@ -121,7 +121,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Item created successfully");
     });
 
-    /** ✅ 8. Test Updating a Redeemable Item */
+    /**  8. Test Updating a Redeemable Item */
     it("should update a redeemable item", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { affectedRows: 1 });
@@ -135,7 +135,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Item updated successfully");
     });
 
-    /** ✅ 9. Test Deleting a Redeemable Item */
+    /**  9. Test Deleting a Redeemable Item */
     it("should delete a redeemable item", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, { affectedRows: 1 });
@@ -146,7 +146,7 @@ describe("Admin API Tests", () => {
         expect(response.body.message).toBe("Item deleted successfully");
     });
 
-    /** ✅ 10. Test Admin Login */
+    /**  10. Test Admin Login */
     it("should login an admin with correct credentials", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, [{ id: 1, email: "admin@example.com", name: "Library Admin" }]);
@@ -161,7 +161,7 @@ describe("Admin API Tests", () => {
         expect(response.body.admin.email).toBe("admin@example.com");
     });
 
-    /** ✅ 11. Test Admin Login with Incorrect Credentials */
+    /**  11. Test Admin Login with Incorrect Credentials */
     it("should return an error for incorrect admin credentials", async () => {
         db.query.mockImplementation((sql, values, callback) => {
             callback(null, []);

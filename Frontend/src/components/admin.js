@@ -22,9 +22,9 @@ function loadStudents() {
                     <td>${student.points || 0}</td>
                     <td>
                         <button onclick="openEditStudentModal('${student.studentID}', '${student.studentName}', '${student.email}', '${student.diploma}', '${student.yearOfEntry}', ${student.points})">
-                            ✏️ Edit
+                             Edit
                         </button>
-                        <button onclick="deleteStudent('${student.studentID}')">🗑 Delete</button>
+                        <button onclick="deleteStudent('${student.studentID}')"> Delete</button>
                     </td>
                 `;
                 tableBody.appendChild(row);

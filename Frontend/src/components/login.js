@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const errorMessage = document.getElementById("errorMessage");
 
     if (!loginRole) {
-        window.location.href = "login.html";
+        window.location.href = "loginpage.html";
         return;
     }
 
