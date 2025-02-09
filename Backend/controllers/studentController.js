@@ -67,63 +67,53 @@ const StudentController = {
     
     getRedeemedItems: (req, res) => {
         const { studentID } = req.params;
-
         StudentModel.getRedeemedItems(studentID, (err, items) => {
-            if (err) {
-                console.error("Error fetching redeemed items:", err);
-                return res.status(500).json({ message: "Internal Server Error" });
-            }
-
-            if (!items || items.length === 0) {
-                return res.status(404).json([]); // Return empty array
-            }
-
+            if (err) return res.status(500).json({ message: "Internal Server Error" });
             res.json(items);
         });
     },
-
     redeemItem: (req, res) => {
         const { studentID } = req.params;
         const { itemID } = req.body;
-
-        console.log(`Processing redeem request: studentID=${studentID}, itemID=${itemID}`);
-
-        // Step 1: Check if student has enough points and item is available
+    
+        console.log(`🔹 Processing redemption: studentID=${studentID}, itemID=${itemID}`);
+    
         StudentModel.checkStudentAndItem(studentID, itemID, (err, results) => {
             if (err) {
-                console.error("Error checking student or item:", err);
+                console.error(" Database Error:", err);
                 return res.status(500).json({ message: "Internal Server Error" });
             }
-
+    
             if (results.length === 0) {
+                console.warn(" Student or Item Not Found.");
                 return res.status(404).json({ message: "Student or item not found" });
             }
-
+    
             const { studentPoints, pointsRequired, quantity } = results[0];
-            console.log(`Student Points: ${studentPoints}, Points Required: ${pointsRequired}, Item Quantity: ${quantity}`);
-
-            // Validation: Not enough points
+    
             if (studentPoints < pointsRequired) {
+                console.warn(" Not Enough Points.");
                 return res.status(400).json({ message: "Not enough points to redeem this item" });
             }
-
-            // Validation: Item out of stock
+    
             if (quantity <= 0) {
+                console.warn(" Item Out of Stock.");
                 return res.status(400).json({ message: "Item is out of stock" });
             }
-
-            // Step 2: Redeem the item (deduct points and reduce quantity)
-            StudentModel.redeemItem(studentID, itemID, pointsRequired, (err) => {
+    
+            // Step 2: Proceed with the redemption
+            StudentModel.redeemItem(studentID, itemID, pointsRequired, (err, result) => {
                 if (err) {
-                    console.error("Error processing redemption:", err);
-                    return res.status(500).json({ message: "Internal Server Error" });
+                    console.error("❌ Error Processing Redemption:", err);
+                    return res.status(500).json({ message: "Redemption failed" });
                 }
-
-                console.log("Redemption successful.");
+    
+                console.log("✅ Redemption successful.");
                 res.json({ message: "Item redeemed successfully!" });
             });
         });
     }
+    
     
     
 };

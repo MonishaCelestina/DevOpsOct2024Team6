@@ -61,26 +61,31 @@ const StudentModel = {
 
     
     // Fetch redeemable items
-    getRedeemableItems: (callback) => {
-        const sql = "SELECT * FROM RedeemableItems WHERE quantity > 0";
+
+    getRedeemedItems: (studentID, callback) => {
+        const sql = `
+            SELECT r.itemID, r.redeemDate, i.itemName 
+            FROM RedeemedItems r
+            JOIN RedeemableItems i ON r.itemID = i.itemID
+            WHERE r.studentID = ?
+            ORDER BY r.redeemDate DESC;
+        `;
         db.query(sql, [studentID], (err, results) => {
             if (err) return callback(err, null);
-            callback(null, results);})
+            callback(null, results);
+        });
     },
 
-    // Check student points and item availability
+    // Check if student has enough points and if item is available
     checkStudentAndItem: (studentID, itemID, callback) => {
         const sql = `
-            SELECT Students.points AS studentPoints, 
-                   RedeemableItems.pointsRequired, 
-                   RedeemableItems.quantity
-            FROM Students
-            JOIN RedeemableItems ON RedeemableItems.itemID = ?
-            WHERE Students.studentID = ?
+            SELECT s.points AS studentPoints, i.pointsRequired, i.quantity
+            FROM Students s
+            JOIN RedeemableItems i ON i.itemID = ?
+            WHERE s.studentID = ?;
         `;
         db.query(sql, [itemID, studentID], callback);
     },
-
     createStudent: (studentID, studentName, diploma, yearOfEntry, email, password, points, callback) => {
         const sql = "INSERT INTO Students (studentID, studentName, diploma, yearOfEntry, email, password, points) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
@@ -108,35 +113,49 @@ const StudentModel = {
         db.query(sql, values, (err, result) => {
             if (err) {
                 console.error("Database Query Error:", err);
-                if (callback) callback(err, null); // ✅ Ensure callback exists before calling
+                if (callback) callback(err, null); // Ensure callback exists before calling
                 return;
             }
-            if (callback) callback(null, result); // ✅ Ensure callback is used properly
+            if (callback) callback(null, result); // Ensure callback is used properly
         });
     },
     // Redeem an item (Deduct points and reduce quantity)
     redeemItem: (studentID, itemID, pointsRequired, callback) => {
         const updateStudentPoints = "UPDATE Students SET points = points - ? WHERE studentID = ?";
         const updateItemQuantity = "UPDATE RedeemableItems SET quantity = quantity - 1 WHERE itemID = ?";
-
-        // Execute the two queries separately
-        db.query(updateStudentPoints, [pointsRequired, studentID], (err, results) => {
+        const insertRedeemedItem = "INSERT INTO RedeemedItems (studentID, itemID, redeemDate) VALUES (?, ?, NOW())";
+    
+        console.log(`🔹 Deducting ${pointsRequired} points from studentID=${studentID}`);
+        
+        db.query(updateStudentPoints, [pointsRequired, studentID], (err, studentResult) => {
             if (err) {
-                console.error("Error updating student points:", err);
+                console.error(" Error updating student points:", err);
                 return callback(err);
             }
-
-            db.query(updateItemQuantity, [itemID], (err, results) => {
+    
+            console.log(`✔ Points Updated: ${studentResult.affectedRows}`);
+    
+            db.query(updateItemQuantity, [itemID], (err, itemResult) => {
                 if (err) {
-                    console.error("Error updating item quantity:", err);
+                    console.error(" Error updating item quantity:", err);
                     return callback(err);
                 }
-
-                callback(null, results); // No errors, return success
+    
+                console.log(` Item Quantity Updated: ${itemResult.affectedRows}`);
+    
+                db.query(insertRedeemedItem, [studentID, itemID], (err, redeemResult) => {
+                    if (err) {
+                        console.error("Error inserting into RedeemedItems:", err);
+                        return callback(err);
+                    }
+    
+                    console.log(` Redemption Recorded in Database: ${redeemResult.affectedRows}`);
+                    callback(null, redeemResult);
+                });
             });
         });
     }
-
+    
     
 };
 
