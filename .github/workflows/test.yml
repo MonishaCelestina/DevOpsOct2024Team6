@@ -15,17 +15,25 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-    
+      with:
+        submodules: true
+
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20.18.0'
 
+    - name: Change to project directory
+      run: cd DevOpsOct2024Team6
+
     - name: Install dependencies
       run: npm install
+      working-directory: DevOpsOct2024Team6
 
     - name: Run Tests
       run: npm test
+      working-directory: DevOpsOct2024Team6
 
     - name: Build Project
       run: npm run build
+      working-directory: DevOpsOct2024Team6
