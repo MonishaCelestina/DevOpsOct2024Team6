@@ -23,15 +23,17 @@ jobs:
       with:
         node-version: '20.18.0'
 
-    
+    - name: Print Directory Structure (Debugging)
+      run: ls -R
+
     - name: Install dependencies
       run: npm install
-      
+      working-directory: ./yip/DevOpsOct2024Team6
 
     - name: Run Tests
       run: npm test
-      working-directory: DevOpsOct2024Team6
+      working-directory: ./yip/DevOpsOct2024Team6
 
     - name: Build Project
       run: npm run build
-      working-directory: DevOpsOct2024Team6
+      working-directory: ./yip/DevOpsOct2024Team6
