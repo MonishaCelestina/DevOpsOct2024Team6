@@ -23,12 +23,10 @@ jobs:
       with:
         node-version: '20.18.0'
 
-    - name: Change to project directory
-      run: cd DevOpsOct2024Team6
-
+    
     - name: Install dependencies
       run: npm install
-      working-directory: DevOpsOct2024Team6
+      
 
     - name: Run Tests
       run: npm test
