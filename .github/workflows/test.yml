@@ -1,37 +1,31 @@
-name: Node.js CI
+name: Node.js CI/CD
 
-# Trigger workflow on push and pull requests to the 'main' branch
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - '**'
   pull_request:
     branches:
-      - main  # Trigger on pull requests to main branch
+      - main
 
-# Define the jobs and steps to run
 jobs:
   build:
-    # The environment where the job will run
     runs-on: ubuntu-latest
-    
+
     steps:
-      # Step 1: Check out the repository code
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.18.0'
 
-      # Step 2: Set up Node.js using the specified version
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'  # Specify the Node.js version here, e.g., '14' or '16'
+    - name: Install dependencies
+      run: npm install
 
-      # Step 3: Install dependencies using npm
-      - name: Install dependencies
-        run: npm install
+    - name: Run Tests
+      run: npm test
 
-      # Step 4: Run the tests
-      - name: Run tests
-        run: npm test
-
-  
+    - name: Build Project
+      run: npm run build
