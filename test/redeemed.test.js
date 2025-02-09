@@ -45,11 +45,11 @@ describe("GET /api/student/:studentID/redeemable-items", () => {
         const studentID = 67890; // Example student ID
 
         const response = await request(app)
-            .get(`/api/student/${studentID}/redeemable-items`) // ✅ Fixed route
+            .get(`/api/student/${studentID}/redeemable-items`) //  Fixed route
             .send();
 
         expect(response.status).toBe(200);
-        expect(response.body).toEqual([]); // ✅ Matches controller response
+        expect(response.body).toEqual([]); //  Matches controller response
     });
 
     // Test Case: Database error
@@ -62,11 +62,11 @@ describe("GET /api/student/:studentID/redeemable-items", () => {
         const studentID = 11111; // Example student ID
 
         const response = await request(app)
-            .get(`/api/student/${studentID}/redeemable-items`) // ✅ Fixed route
+            .get(`/api/student/${studentID}/redeemable-items`) //  Fixed route
             .send();
 
         expect(response.status).toBe(500);
-        expect(response.body).toHaveProperty("message"); // ✅ Ensure message exists
+        expect(response.body).toHaveProperty("message"); //  Ensure message exists
         expect(response.body.message).toMatch(/Failed to retrieve redeemable items|Internal Server Error/);
     });
 });
