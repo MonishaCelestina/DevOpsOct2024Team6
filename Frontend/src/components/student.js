@@ -32,7 +32,14 @@ async function fetchRedeemableItems() {
         console.log("Fetched redeemable items:", items);
 
         const itemsContainer = document.getElementById("itemsContainer");
-        itemsContainer.innerHTML = ""; 
+
+        // Check if the element exists before trying to manipulate it
+        if (!itemsContainer) {
+            console.error("Error: itemsContainer element not found in the DOM.");
+            return;
+        }
+
+        itemsContainer.innerHTML = ""; // Clear previous items
 
         if (items.length > 0) {
             items.forEach(item => {
@@ -50,6 +57,7 @@ async function fetchRedeemableItems() {
         console.error("Error fetching redeemable items:", error);
     }
 }
+
 
 async function redeemItem(itemID, pointsRequired) {
     const student = JSON.parse(localStorage.getItem("student"));
