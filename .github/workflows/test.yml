@@ -15,9 +15,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Ensures all branches are available
-        ref: ${{ github.ref }}  # Checks out the branch that triggered the workflow
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -33,16 +30,16 @@ jobs:
     - name: Run Tests
       run: npm test  # Runs Jest using package.json settings
 
-        # ✅ Discord Notification Step
+    # Discord Notification Step
     - name: Send Discord Notification
-      if: always()  #  notification is sent whether the workflow succeeds or fails
+      if: always()  # notification is sent whether the workflow succeeds or fails
       env:
-        DISCORD_WEBHOOK: ${{ secrets.https://discordapp.com/api/webhooks/1338498716440727613/_StTDeeYZcv6Ps_0wufOdexaDMdS8c27unCV9olHFtRfKr88GJUIpK6ALihVY6QUcYKE }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}  # Uses the stored secret
       run: |
-        STATUS="✅ Success"
+        STATUS="Success"
         COLOR="3066993"
         if [ "${{ job.status }}" != "success" ]; then
-          STATUS="❌ Failed"
+          STATUS="Failed"
           COLOR="15158332"
         fi
 
@@ -59,4 +56,4 @@ jobs:
             ],
             \"footer\": {\"text\": \"GitHub Actions | ${{ github.event_name }}\", \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"}
           }]
-        }" $DISCORD_WEBHOOK
+        }" "$DISCORD_WEBHOOK"
