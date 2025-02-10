@@ -32,3 +32,31 @@ jobs:
       
     - name: Run Tests
       run: npm test  # Runs Jest using package.json settings
+
+        # ✅ Discord Notification Step
+    - name: Send Discord Notification
+      if: always()  #  notification is sent whether the workflow succeeds or fails
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.https://discordapp.com/api/webhooks/1338498716440727613/_StTDeeYZcv6Ps_0wufOdexaDMdS8c27unCV9olHFtRfKr88GJUIpK6ALihVY6QUcYKE }}
+      run: |
+        STATUS="✅ Success"
+        COLOR="3066993"
+        if [ "${{ job.status }}" != "success" ]; then
+          STATUS="❌ Failed"
+          COLOR="15158332"
+        fi
+
+        curl -H "Content-Type: application/json" -X POST -d "{
+          \"username\": \"GitHub Actions\",
+          \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+          \"embeds\": [{
+            \"title\": \"GitHub CI/CD Build Status\",
+            \"description\": \"Workflow *Node.js CI/CD* has **$STATUS** for repository **${{ github.repository }}**.\",
+            \"color\": $COLOR,
+            \"fields\": [
+              {\"name\": \"Branch\", \"value\": \"${{ github.ref }}\", \"inline\": true},
+              {\"name\": \"Commit\", \"value\": \"${{ github.sha }}\", \"inline\": true}
+            ],
+            \"footer\": {\"text\": \"GitHub Actions | ${{ github.event_name }}\", \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"}
+          }]
+        }" $DISCORD_WEBHOOK
