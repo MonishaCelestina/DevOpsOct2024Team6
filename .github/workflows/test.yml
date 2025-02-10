@@ -30,30 +30,46 @@ jobs:
     - name: Run Tests
       run: npm test  # Runs Jest using package.json settings
 
-    # Discord Notification Step
+    - name: Get Commit Message
+      id: commit_message
+      run: echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+
+    #  Decide Who to Notify
     - name: Send Discord Notification
-      if: always()  # notification is sent whether the workflow succeeds or fails
+      if: always()  # Ensures notification is sent whether the workflow succeeds or fails
       env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}  # Uses the stored secret
+        DISCORD_WEBHOOK_BUSINESS: ${{ secrets.DISCORD_WEBHOOK_BUSINESS }}
+        DISCORD_WEBHOOK_TECHNICAL: ${{ secrets.DISCORD_WEBHOOK_TECHNICAL }}
+        COMMIT_MSG: ${{ env.COMMIT_MSG }}
       run: |
-        STATUS="Success"
+        STATUS=" Success"
         COLOR="3066993"
         if [ "${{ job.status }}" != "success" ]; then
           STATUS="Failed"
           COLOR="15158332"
         fi
 
+        # Check if commit message contains feature/fix (for Business Stakeholders)
+        if echo "$COMMIT_MSG" | grep -iqE 'feat|fix'; then
+          WEBHOOK_URL="$DISCORD_WEBHOOK_BUSINESS"
+          MESSAGE="**Major Feature or Fix has been released** in **${{ github.repository }}**!"
+        else
+          # Otherwise, send notification to technical team (for bugs, patches)
+          WEBHOOK_URL="$DISCORD_WEBHOOK_TECHNICAL"
+          MESSAGE="**Bug Fix or Technical Update** in **${{ github.repository }}**."
+        fi
+
         curl -H "Content-Type: application/json" -X POST -d "{
           \"username\": \"GitHub Actions\",
           \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
           \"embeds\": [{
-            \"title\": \"GitHub CI/CD Build Status\",
-            \"description\": \"Workflow *Node.js CI/CD* has **$STATUS** for repository **${{ github.repository }}**.\",
+            \"title\": \"$MESSAGE\",
+            \"description\": \"Workflow *Node.js CI/CD* has **$STATUS**.\",
             \"color\": $COLOR,
             \"fields\": [
               {\"name\": \"Branch\", \"value\": \"${{ github.ref }}\", \"inline\": true},
-              {\"name\": \"Commit\", \"value\": \"${{ github.sha }}\", \"inline\": true}
+              {\"name\": \"Commit\", \"value\": \"${COMMIT_MSG}\", \"inline\": true}
             ],
             \"footer\": {\"text\": \"GitHub Actions | ${{ github.event_name }}\", \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"}
           }]
-        }" "$DISCORD_WEBHOOK"
+        }" "$WEBHOOK_URL"
