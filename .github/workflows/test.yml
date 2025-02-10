@@ -1,0 +1,39 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - Monisha
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Ensures all branches are available
+        ref: ${{ github.ref }}  # Checks out the branch that triggered the workflow
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.18.0'
+
+    - name: Print Directory Structure (Debugging)
+      run: ls -R
+
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Run Tests
+      run: npm test
+      working-directory: ./yip/DevOpsOct2024Team6
+
+    - name: Build Project
+      run: npm run build
+      working-directory: ./yip/DevOpsOct2024Team6
