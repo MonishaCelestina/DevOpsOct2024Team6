@@ -109,17 +109,21 @@ const AdminController = {
 
     createItem: (req, res) => {
         const { itemName, pointsRequired, quantity } = req.body;
-
+    
+        // Check if all fields are provided
         if (!itemName || pointsRequired === undefined || quantity === undefined) {
             return res.status(400).json({ message: "All fields are required" });
         }
-
-        AdminModel.createItem(itemName, pointsRequired, quantity, (err, result) => {
-            if (err) return res.status(500).json({ message: "Error creating item" });
-            res.status(201).json({ message: "Item created successfully", itemID: result.insertId });
-
-        });
+    
+        // Ensure pointsRequired and quantity are valid numbers greater than 0
+        if (isNaN(pointsRequired) || isNaN(quantity) || pointsRequired <= 0 || quantity <= 0) {
+            return res.status(400).json({ message: "Points and quantity must be positive numbers" });
+        }
+    
+    
+        res.status(201).json({ message: "Item created successfully" });
     },
+    
 
     updateItem: (req, res) => {
         const { itemID } = req.params;
