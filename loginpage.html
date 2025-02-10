@@ -11,8 +11,8 @@
         <!-- Role Selection -->
         <div id="roleSelection">
             <h2>Select Login Type</h2>
-            <button onclick="selectRole('student')">Login as Student</button>
-            <button onclick="selectRole('admin')">Login as Admin</button>
+            <button id="student-role" onclick="selectRole('student')">Login as Student</button>
+            <button id="admin-role" onclick="selectRole('admin')">Login as Admin</button>
         </div>
 
         <!-- Login Form (Initially Hidden) -->
@@ -25,7 +25,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required><br><br>
 
-                <button type="submit">Login</button>
+                <button type="submit" id="submit-button">Login</button>
             </form>
 
             <p id="errorMessage" style="color: red;"></p>
