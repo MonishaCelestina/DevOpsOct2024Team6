@@ -31,10 +31,4 @@ jobs:
       run: npm install
       
     - name: Run Tests
-      run: jest test
-      working-directory: ./DevOpsOct2024Team6
-
-
-    - name: Build Project
-      run: npm run build
-      working-directory: ./DevOpsOct2024Team6
+      run: npm test  # Runs Jest using package.json settings
