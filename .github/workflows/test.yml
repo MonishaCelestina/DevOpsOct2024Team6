@@ -3,10 +3,10 @@ name: Node.js CI/CD
 on:
   push:
     branches:
-      - Monisha
+      - '**'  # Triggers on any push to any branch
   pull_request:
     branches:
-      - main
+      - '**'  # Triggers on any pull request to any branch
 
 jobs:
   build:
@@ -34,6 +34,7 @@ jobs:
       run: jest test
       working-directory: ./DevOpsOct2024Team6
 
+
     - name: Build Project
       run: npm run build
-      working-directory: ./yip/DevOpsOct2024Team6
+      working-directory: ./DevOpsOct2024Team6
