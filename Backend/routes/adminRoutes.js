@@ -21,5 +21,8 @@ router.post("/login", AdminController.loginAdmin);
 router.post("/students", AdminController.createStudent);
 router.put("/students/:studentID", AdminController.updateStudent);
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+router.post("/upload-csv", upload.single("csvFile"), AdminController.uploadCSV);
 
 module.exports = router;

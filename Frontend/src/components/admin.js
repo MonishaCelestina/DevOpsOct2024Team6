@@ -335,3 +335,38 @@ function logout() {
     localStorage.removeItem("admin");
     window.location.href = "loginpage.html";
 }
+
+function handleCSVUpload(event) {
+    event.preventDefault(); // Prevent page reload
+
+    const fileInput = document.getElementById("csvFileInput");
+    const file = fileInput.files[0];
+    const uploadStatus = document.getElementById("uploadStatus");
+
+    if (!file) {
+        alert("Please select a CSV file.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("csvFile", file);
+
+    fetch("http://localhost:3000/api/admin/upload-csv", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Show success message
+        uploadStatus.textContent = ` ${data.message}`;
+        uploadStatus.style.color = "green";
+
+        // Refresh student list
+        loadStudents();
+    })
+    .catch(error => {
+        console.error("Error uploading CSV:", error);
+        uploadStatus.textContent = " Upload failed!";
+        uploadStatus.style.color = "red";
+    });
+}

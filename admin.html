@@ -15,6 +15,11 @@
         <button onclick="searchStudent()">Search</button>
         <button onclick="loadStudents()">Refresh List</button>
         <button onclick="openStudentModal()">Create New Student</button>
+        <form id="csvUploadForm" onsubmit="handleCSVUpload(event)">
+            <input type="file" id="csvFileInput" accept=".csv" required>
+            <button type="submit">Upload CSV</button>
+        </form>
+        <p id="uploadStatus"></p>
 
         <table id="studentsTable">
             <thead>
