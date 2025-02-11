@@ -221,7 +221,7 @@ it("should search students by name or ID and return all fields", async () => {
                 .post("/api/admin/upload-csv")
                 .attach("csvFile", csvPath);
     
-            // Cleanup: Delete the test CSV file after test
+            // Cleanup: Deletes the test CSV file after test
             fs.unlinkSync(csvPath);
     
             // Assertions
@@ -251,4 +251,57 @@ it("should search students by name or ID and return all fields", async () => {
             expect(response.body[0].yearOfEntry).toBe(2022);
         });
     
+});
+
+
+describe("Failing Admin API Tests", () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks(); // Reset mocks before each test
+    });
+
+    // 1. Fetching Students - Incorrect Response Structure
+    it("should fail if the response does not contain studentName", async () => {
+        const response = await request(app).get("/api/admin/students");
+        
+        expect(response.status).toBe(200);
+        expect(response.body[0]).toHaveProperty("studentName"); // This will fail if studentName is missing
+    });
+
+    // 2. Updating a Student - Missing Required Fields
+    it("should fail when updating a student with missing required fields", async () => {
+        const response = await request(app)
+            .put("/api/admin/students/123")
+            .send({
+                email: "updated.email@example.com" // Missing studentName, diploma, etc.
+            });
+
+        expect(response.status).toBe(400); // Should fail due to missing required fields
+    });
+
+    // 3. Admin Login - Missing Password Field
+    it("should fail when logging in without a password", async () => {
+        const response = await request(app)
+            .post("/api/admin/login")
+            .send({ email: "admin@example.com" }); // Missing password field
+        
+        expect(response.status).toBe(400); // Should fail due to missing required field
+    });
+
+    // 4. Uploading CSV - Wrong File Type
+    it("should fail if a non-CSV file is uploaded", async () => {
+        const response = await request(app)
+            .post("/api/admin/upload-csv")
+            .attach("csvFile", Buffer.from("some text content"), { filename: "file.txt" }); // Incorrect file type
+        
+        expect(response.status).toBe(400); // Should fail due to invalid file format
+    });
+
+    // 5. Searching Students - No Results Found
+    it("should fail when searching for a non-existent student", async () => {
+        const response = await request(app).get("/api/admin/students/search?q=NonExistentStudent");
+        
+        expect(response.status).toBe(404); // Should fail if no matching student is found
+    });
+
 });
