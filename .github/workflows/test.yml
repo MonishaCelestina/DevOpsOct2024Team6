@@ -27,37 +27,74 @@ jobs:
     - name: Install dependencies
       run: npm install
       
-    - name: Run Tests
-      run: npm test  # Runs Jest using package.json settings
+    - name: Ensure jest-html-reporters is installed
+      run: npm install --save-dev jest-html-reporters
+
+    - name: Run Tests with Coverage & HTML Report
+      run: |
+        mkdir -p reports  # Ensure the reports directory exists
+        TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+        export JEST_HTML_REPORT_FILENAME="test-report-$TIMESTAMP.html"
+        npm test -- --coverage --reporters=default --reporters=jest-html-reporters
+
+    - name: Upload Jest HTML Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: jest-html-report
+        path: reports/*.html  # Uploads all test reports (new & old)
 
     - name: Get Commit Message
       id: commit_message
       run: echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
 
-    #  Decide Who to Notify
-    - name: Send Discord Notification
-      if: always()  # Ensures notification is sent whether the workflow succeeds or fails
+    # Notify Technical Team (Always)
+    - name: Send Discord Notification to Technical Team
+      if: always()
       env:
-        DISCORD_WEBHOOK_BUSINESS: ${{ secrets.DISCORD_WEBHOOK_BUSINESS }}
         DISCORD_WEBHOOK_TECHNICAL: ${{ secrets.DISCORD_WEBHOOK_TECHNICAL }}
         COMMIT_MSG: ${{ env.COMMIT_MSG }}
       run: |
-        STATUS=" Success"
+        STATUS="Success"
         COLOR="3066993"
         if [ "${{ job.status }}" != "success" ]; then
           STATUS="Failed"
           COLOR="15158332"
         fi
 
-        # Check if commit message contains feature/fix (for Business Stakeholders)
-        if echo "$COMMIT_MSG" | grep -iqE 'feat|fix'; then
-          WEBHOOK_URL="$DISCORD_WEBHOOK_BUSINESS"
-          MESSAGE="**Major Feature or Fix has been released** in **${{ github.repository }}**!"
-        else
-          # Otherwise, send notification to technical team (for bugs, patches)
-          WEBHOOK_URL="$DISCORD_WEBHOOK_TECHNICAL"
-          MESSAGE="**Bug Fix or Technical Update** in **${{ github.repository }}**."
+        WEBHOOK_URL="$DISCORD_WEBHOOK_TECHNICAL"
+        MESSAGE="**New CI/CD Workflow Update** in **${{ github.repository }}**."
+
+        curl -H "Content-Type: application/json" -X POST -d "{
+          \"username\": \"GitHub Actions\",
+          \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+          \"embeds\": [{
+            \"title\": \"$MESSAGE\",
+            \"description\": \"Workflow *Node.js CI/CD* has **$STATUS**.\",
+            \"color\": $COLOR,
+            \"fields\": [
+              {\"name\": \"Branch\", \"value\": \"${{ github.ref }}\", \"inline\": true},
+              {\"name\": \"Commit\", \"value\": \"${COMMIT_MSG}\", \"inline\": true}
+            ],
+            \"footer\": {\"text\": \"GitHub Actions | ${{ github.event_name }}\", \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"}
+          }]
+        }" "$WEBHOOK_URL"
+
+    # Notify Business Stakeholders (Only for Features & Fixes)
+    - name: Send Discord Notification to Business Stakeholders
+      if: always() && contains(env.COMMIT_MSG, 'feat') || contains(env.COMMIT_MSG, 'fix')
+      env:
+        DISCORD_WEBHOOK_BUSINESS: ${{ secrets.DISCORD_WEBHOOK_BUSINESS }}
+        COMMIT_MSG: ${{ env.COMMIT_MSG }}
+      run: |
+        STATUS="Success"
+        COLOR="3066993"
+        if [ "${{ job.status }}" != "success" ]; then
+          STATUS="Failed"
+          COLOR="15158332"
         fi
+
+        WEBHOOK_URL="$DISCORD_WEBHOOK_BUSINESS"
+        MESSAGE="**Major Feature or Fix Released** in **${{ github.repository }}**!"
 
         curl -H "Content-Type: application/json" -X POST -d "{
           \"username\": \"GitHub Actions\",
