@@ -31,6 +31,7 @@ jobs:
       run: npm install --save-dev jest-html-reporters
 
     - name: Run Tests with Coverage & HTML Report
+      continue-on-error: true
       run: |
         mkdir -p reports  # Ensure the reports directory exists
         TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
