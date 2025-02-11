@@ -70,3 +70,71 @@ describe("GET /api/student/:studentID/redeemable-items", () => {
         expect(response.body.message).toMatch(/Failed to retrieve redeemable items|Internal Server Error/);
     });
 });
+
+
+describe("Failing redeemed tests", () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks(); // Reset mocks before each test
+    });
+
+    // 1. Test Case: Invalid student ID format
+    it("should fail if the student ID format is invalid", async () => {
+        const studentID = "invalid-id"; // Invalid student ID format
+
+        const response = await request(app)
+            .get(`/api/student/${studentID}/redeemable-items`)
+            .send();
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Invalid student ID format");
+    });
+
+    // 2. Test Case: Empty student ID
+    it("should fail if the student ID is empty", async () => {
+        const studentID = ""; // Empty student ID
+
+        const response = await request(app)
+            .get(`/api/student/${studentID}/redeemable-items`)
+            .send();
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Student ID cannot be empty");
+    });
+
+    // 3. Test Case: Student not found
+    it("should fail if the student does not exist", async () => {
+        // Mock DB query returning no result for the student
+        db.query.mockImplementation((sql, values, callback) => {
+            callback(null, []); // No student found
+        });
+
+        const studentID = 99999; // Non-existent student ID
+
+        const response = await request(app)
+            .get(`/api/student/${studentID}/redeemable-items`)
+            .send();
+
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe("Student not found");
+    });
+
+    // 5. Test Case: Missing redeemDate field in response
+    it("should fail if the redeemDate field is missing in the response", async () => {
+        // Mock DB query returning items without the redeemDate field
+        db.query.mockImplementation((sql, callback) => {
+            callback(null, [
+                { itemName: "Notebook" } // Missing redeemDate field
+            ]);
+        });
+
+        const studentID = 12345;
+
+        const response = await request(app)
+            .get(`/api/student/${studentID}/redeemable-items`)
+            .send();
+
+        expect(response.status).toBe(200);
+        expect(response.body[0]).not.toHaveProperty("redeemDate"); // This will fail if redeemDate is missing
+    });
+}); 
