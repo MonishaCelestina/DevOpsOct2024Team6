@@ -43,8 +43,14 @@ const AdminModel = {
 
     //  Search Students by ID or Name
     searchStudent: (query, callback) => {
-        const sql = "SELECT studentID, studentName, points FROM Students WHERE studentID LIKE ? OR studentName LIKE ?";
-        db.query(sql, [`%${query}%`, `%${query}%`], (err, results) => {
+        const sql = `
+            SELECT studentID, studentName, email, diploma, yearOfEntry, points 
+            FROM Students 
+            WHERE studentID LIKE ? OR studentName LIKE ?
+        `;
+    
+        const searchQuery = `%${query}%`; // Allow partial matches
+        db.query(sql, [searchQuery, searchQuery], (err, results) => {
             if (err) return callback(err, null);
             callback(null, results);
         });
