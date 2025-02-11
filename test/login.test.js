@@ -58,19 +58,59 @@ describe("POST /login", () => {
         expect(response.body.admin.email).toBe("admin@example.com");
     });
     
+});
 
-    //  Test Admin Login - Incorrect Credentials
-    it("should return an error for incorrect admin credentials", async () => {
-        // Mock DB query returning no matching admin
-        db.query.mockImplementation((sql, values, callback) => {
-            callback(null, []);
-        });
 
+describe("POST /login - Failing Cases", () => {
+    
+    // Failing Case: Student Login - Incorrect Password
+    it("should return an error for a student with a correct email but incorrect password", async () => {
         const response = await request(app)
-            .post("/login") // Admin login route
-            .send({ email: "wrong@admin.com", password: "wrongpassword" });
+            .post("/login")
+            .send({ email: "john.tan.2024@example.edu", password: "wrongpassword" });
 
-        expect(response.status).toBe(401);
+        expect(response.status).toBe(401); // Unauthorized
         expect(response.body.message).toBe("Invalid email or password");
     });
+
+    // Failing Case: Student Login - Non-existent Email
+    it("should return an error for a student with a non-existent email", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ email: "nonexistent@student.com", password: "password123" });
+
+        expect(response.status).toBe(401); // Unauthorized
+        expect(response.body.message).toBe("Invalid email or password");
+    });
+
+    // Failing Case: Admin Login - Incorrect Password
+    it("should return an error for an admin with a correct email but incorrect password", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ email: "admin@example.com", password: "wrongpassword" });
+
+        expect(response.status).toBe(401); // Unauthorized
+        expect(response.body.message).toBe("Invalid email or password");
+    });
+
+    // Failing Case: Admin Login - Non-existent Email
+    it("should return an error for an admin with a non-existent email", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ email: "wrongadmin@example.com", password: "adminpass123" });
+
+        expect(response.status).toBe(401); // Unauthorized
+        expect(response.body.message).toBe("Invalid email or password");
+    });
+
+    // Failing Case: Missing Email or Password
+    it("should return an error if email or password is missing", async () => {
+        const response = await request(app)
+            .post("/login")
+            .send({ email: "admin@example.com" }); // Missing password
+
+        expect(response.status).toBe(400); // Bad Request
+        expect(response.body.message).toBe("Email and password are required");
+    });
+
 });
