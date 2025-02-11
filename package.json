@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "jest --coverage --reporters=default --reporters=jest-html-reporter"
+    "test": "jest --coverage --reporters=default --reporters=jest-html-reporters"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -22,15 +22,5 @@
     "jest-html-reporter": "^3.10.2",
     "mocha": "^10.0.0",
     "supertest": "^7.0.0"
-  },
-  "jest": {
-    "coverageReporters": ["html", "json", "lcov", "text"],
-    "reporters": [
-      "default",
-      ["jest-html-reporter", {
-        "pageTitle": "Test Report",
-        "outputPath": "reports/test-report.html"
-      }]
-    ]
   }
-}
+}  
