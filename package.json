@@ -8,6 +8,7 @@
     "test": "jest --coverage --reporters=default --reporters=jest-html-reporters"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
     "express": "^4.21.2",
