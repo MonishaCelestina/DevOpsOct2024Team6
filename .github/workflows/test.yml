@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: jest-html-report
-        path: reports/*.html  # Uploads all test reports (new & old)
+        path: reports/ # Uploads all test reports (new & old)
 
     - name: Get Commit Message
       id: commit_message
