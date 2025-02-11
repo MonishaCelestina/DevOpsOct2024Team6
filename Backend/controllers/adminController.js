@@ -45,13 +45,37 @@ const AdminController = {
         },
     
 
-    searchStudent: (req, res) => {
-        const { q } = req.query;
-        AdminModel.searchStudent(q, (err, students) => {
-            if (err) return res.status(500).json({ message: "Internal Server Error" });
-            res.json(students);
-        });
-    },
+        searchStudent: (req, res) => {
+            const { q } = req.query;
+        
+            // Ensure query is provided
+            if (!q) {
+                return res.status(400).json({ message: "Search query is required." });
+            }
+        
+            AdminModel.searchStudent(q, (err, students) => {
+                if (err) {
+                    console.error("Database Error in searchStudent:", err);
+                    return res.status(500).json({ message: "Internal Server Error" });
+                }
+        
+                if (students.length === 0) {
+                    return res.status(404).json({ message: "No students found." });
+                }
+        
+                // Ensure all fields are included in the response
+                const formattedStudents = students.map(student => ({
+                    studentID: student.studentID || "N/A",
+                    studentName: student.studentName || "N/A",
+                    email: student.email || "N/A",
+                    diploma: student.diploma || "N/A",
+                    yearOfEntry: student.yearOfEntry || "N/A",
+                    points: student.points !== undefined ? student.points : 0
+                }));
+        
+                res.json(formattedStudents);
+            });
+        },
 
     createStudent: (req, res) => {
         console.log("Received request body:", req.body); // Debugging log

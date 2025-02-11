@@ -132,6 +132,8 @@ function searchStudent() {
                     <td>${student.studentID}</td>
                     <td>${student.studentName}</td>
                     <td>${student.email}</td>
+                    <td>${student.diploma}</td>
+                    <td>${student.yearOfEntry}</td>
                     <td>${student.points}</td>
                     <td>
                         <button onclick="editStudent('${student.studentID}')">Edit</button>
