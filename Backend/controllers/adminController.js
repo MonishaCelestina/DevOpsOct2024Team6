@@ -1,5 +1,7 @@
 const AdminModel = require("../models/adminModel");
 const StudentModel = require("../models/studentModel");
+const csvParser = require("csv-parser");
+const fs = require("fs");
 const db = require("../db");
 
 const AdminController = {
@@ -169,8 +171,35 @@ const AdminController = {
             if (err) return res.status(500).json({ message: "Error deleting item" });
             res.json({ message: "Item deleted successfully" });
         });
-    }
+    },
 
+    uploadCSV: (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded!" });
+        }
+
+        const students = [];
+
+        fs.createReadStream(req.file.path)
+            .pipe(csvParser())
+            .on("data", (row) => {
+                students.push(row);
+            })
+            .on("end", () => {
+                AdminModel.bulkInsertStudents(students, (err, result) => {
+                    if (err) {
+                        console.error(" Error inserting students:", err);
+                        return res.status(500).json({ message: "Error inserting students!" });
+                    }
+
+                    res.json({ message: `Successfully added ${students.length} students!` });
+
+                    // Delete uploaded file after processing
+                    fs.unlinkSync(req.file.path);
+                });
+            });
+    }
+    
     
 };
 

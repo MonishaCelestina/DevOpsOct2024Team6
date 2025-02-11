@@ -127,6 +127,15 @@ const AdminModel = {
             if (err) return callback(err, null);
             callback(null, { message: "Item deleted successfully" });
         });
+    },
+
+    bulkInsertStudents: (students, callback) => {
+        const sql = `INSERT INTO Students (studentID, studentName, diploma, yearOfEntry, email, password, points) VALUES ?`;
+        const values = students.map(s => [s.studentID, s.studentName, s.diploma, s.yearOfEntry, s.email, s.password, s.points || 0]);
+        db.query(sql, [values], (err, result) => {
+            if (err) return callback(err, null);
+            callback(null, { message: `Successfully added ${students.length} students.` });
+        });
     }
 
 
