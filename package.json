@@ -2,10 +2,10 @@
   "name": "DevOpsOct2024Team6",
   "version": "1.0.0",
   "description": "Your project description",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "jest"
+    "start": "node app.js",
+    "test": "jest --coverage --reporters=default --reporters=jest-html-reporters"
   },
   "dependencies": {
     "cors": "^2.8.5",
