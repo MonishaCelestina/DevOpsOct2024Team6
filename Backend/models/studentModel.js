@@ -1,15 +1,22 @@
 const db = require("../db");
+const bcrypt = require('bcrypt');
 
 const StudentModel = {
-
     authenticateStudent: (email, password, callback) => {
-        const sql = "SELECT * FROM Students WHERE email = ? AND password = ?";
-
-        db.query(sql, [email, password], (err, results) => {
+        const sql = "SELECT * FROM Students WHERE email = ?";
+        db.query(sql, [email], (err, results) => {
             if (err) return callback(err, null);
-            if (results.length === 0) return callback(null, null);
+            if (results.length === 0) return callback(null, null); 
+            const student = results[0];
 
-            callback(null, results[0]); // Return student data
+            bcrypt.compare(password, student.password, (err, isMatch) => {
+                if (err) return callback(err, null);
+                if (isMatch) {
+                    callback(null, student); // Password matches, return student data
+                } else {
+                    callback(null, null); // Password incorrect
+                }
+            });
         });
     },
 
