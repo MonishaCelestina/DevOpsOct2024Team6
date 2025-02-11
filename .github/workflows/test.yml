@@ -38,7 +38,7 @@ jobs:
         npm test -- --coverage --reporters=default --reporters=jest-html-reporters
 
     - name: Upload Jest HTML Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: jest-html-report
         path: reports/*.html  # Uploads all test reports (new & old)
