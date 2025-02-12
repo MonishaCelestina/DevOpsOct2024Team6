@@ -18,7 +18,9 @@ Quality Assurance Lead - Khanh Linh
 - Acceptance Testing
 - Development Support
 
+
 Developer - Monisha Celestina
+-
 Feature Development
 - Designed and implemented the entire backend using Node.js, Express.js, and MySQL.
 - Developed the frontend using HTML, CSS, and JavaScript, ensuring seamless integration with the backend.
